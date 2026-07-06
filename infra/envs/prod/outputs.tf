@@ -11,6 +11,6 @@ output "ecs_cluster" {
 }
 
 output "database_password" {
-  value      = random_password.db_password.result
-  sensitive  = true
+  value     = random_password.db_password.result
+  sensitive = true
 }

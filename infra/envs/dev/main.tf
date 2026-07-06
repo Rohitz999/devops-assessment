@@ -1,5 +1,4 @@
 module "network" {
-
   source = "../../modules/network"
 
   project_name       = var.project_name
@@ -11,7 +10,6 @@ module "network" {
 }
 
 module "alb" {
-
   source = "../../modules/alb"
 
   project_name      = var.project_name
@@ -21,7 +19,6 @@ module "alb" {
 }
 
 module "ecs" {
-
   source = "../../modules/ecs"
 
   project_name          = var.project_name
@@ -34,19 +31,17 @@ module "ecs" {
 }
 
 module "rds" {
-
   source = "../../modules/rds"
 
-  project_name           = var.project_name
-  environment            = var.environment
-  private_subnet_ids     = module.network.private_subnet_ids
-  vpc_id                 = module.network.vpc_id
-  ecs_security_group_id  = module.ecs.ecs_security_group_id
-
-  db_instance_class   = var.db_instance_class
-  db_name             = var.db_name
-  db_username         = var.db_username
-  db_password         = random_password.db_password.result
-  backup_retention    = var.backup_retention
-  deletion_protection = var.deletion_protection
+  project_name          = var.project_name
+  environment           = var.environment
+  private_subnet_ids    = module.network.private_subnet_ids
+  vpc_id                = module.network.vpc_id
+  ecs_security_group_id = module.ecs.ecs_security_group_id
+  db_instance_class     = var.db_instance_class
+  db_name               = var.db_name
+  db_username           = var.db_username
+  db_password           = random_password.db_password.result
+  backup_retention      = var.backup_retention
+  deletion_protection   = var.deletion_protection
 }
