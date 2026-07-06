@@ -1,0 +1,336 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict 81xmLwG6ul8MGJ70tfgM88Nh5HsmZPVX7lhFEiov112jClTN2LrZiKcIU1iBsh2
+
+-- Dumped from database version 16.14 (Debian 16.14-1.pgdg13+1)
+-- Dumped by pg_dump version 18.4
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: booking_events; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.booking_events (
+    id bigint NOT NULL,
+    booking_id uuid NOT NULL,
+    event_type character varying(100) NOT NULL,
+    payload jsonb,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.booking_events OWNER TO postgres;
+
+--
+-- Name: booking_events_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.booking_events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.booking_events_id_seq OWNER TO postgres;
+
+--
+-- Name: booking_events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.booking_events_id_seq OWNED BY public.booking_events.id;
+
+
+--
+-- Name: hotel_bookings; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.hotel_bookings (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    org_id uuid NOT NULL,
+    hotel_id character varying(100) NOT NULL,
+    city character varying(100) NOT NULL,
+    checkin_date date NOT NULL,
+    checkout_date date NOT NULL,
+    amount numeric(12,2) NOT NULL,
+    status character varying(50) NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE public.hotel_bookings OWNER TO postgres;
+
+--
+-- Name: booking_events id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.booking_events ALTER COLUMN id SET DEFAULT nextval('public.booking_events_id_seq'::regclass);
+
+
+--
+-- Data for Name: booking_events; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.booking_events (id, booking_id, event_type, payload, created_at) FROM stdin;
+1	a1553007-7506-46a7-bc60-c3beba000916	CHECKOUT	{"source": "system", "status": "success"}	2026-06-13 19:25:52.472587
+2	3763654b-17e5-4e9d-9cf6-d2a4ca91e252	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-20 19:25:52.472587
+3	d6c63550-1a5d-4180-b4e9-99569926aaab	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-07-05 19:25:52.472587
+4	9481c9ca-7e76-4006-8a88-139244c84a74	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-15 19:25:52.472587
+5	94a0773f-af73-4701-b6c2-1d123894d13c	CHECKIN	{"source": "system", "status": "success"}	2026-06-17 19:25:52.472587
+6	5c587e50-e8a7-4bc2-989b-033da6469eaa	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-21 19:25:52.472587
+7	21c0191d-d9c1-4078-a78d-59fd136e397f	CHECKOUT	{"source": "system", "status": "success"}	2026-05-28 19:25:52.472587
+8	091f6d41-249a-4f44-9e12-010e3f261eed	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-06 19:25:52.472587
+9	f38e261c-d681-44bd-972c-0ca2117999c9	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-07-04 19:25:52.472587
+10	25eed4cb-b0cf-4108-b5f7-07a44cd1890f	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-08 19:25:52.472587
+11	88562817-1c1f-48f6-b1d6-f67a52b7025e	CHECKOUT	{"source": "system", "status": "success"}	2026-07-01 19:25:52.472587
+12	766de7f9-51dd-478d-a92a-05cdfdda7fb4	CHECKIN	{"source": "system", "status": "success"}	2026-06-09 19:25:52.472587
+13	5e122a45-2621-4ecc-b3b3-55a0831ff80d	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-23 19:25:52.472587
+14	6dd2cc39-c412-43bf-a2cd-7324a30e47ab	CHECKIN	{"source": "system", "status": "success"}	2026-06-06 19:25:52.472587
+15	9102d4aa-8d4a-4134-90bb-5a3d9d00d396	CHECKOUT	{"source": "system", "status": "success"}	2026-07-05 19:25:52.472587
+16	c88452c7-0bae-4796-9acd-048353819d74	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-12 19:25:52.472587
+17	640b129b-8e08-4da0-95cd-41d32c34876b	CHECKIN	{"source": "system", "status": "success"}	2026-05-28 19:25:52.472587
+18	6999307a-0939-4ef0-a666-2affb31a2ea7	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-05-31 19:25:52.472587
+19	845b84a2-3699-43b1-b904-c4c7a56180b3	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-23 19:25:52.472587
+20	e76b93d0-d3c4-404f-878a-a75fb5b53bac	CHECKIN	{"source": "system", "status": "success"}	2026-06-28 19:25:52.472587
+21	a9d4d9a3-b467-423d-8b8d-fd1948dbcad1	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-18 19:25:52.472587
+22	8ccc51e9-9d12-4d48-b34d-befb2c140742	CHECKOUT	{"source": "system", "status": "success"}	2026-06-13 19:25:52.472587
+23	686c2912-0e83-42c8-8be2-8ec871aeccaa	CHECKOUT	{"source": "system", "status": "success"}	2026-06-12 19:25:52.472587
+24	b478010b-2471-4965-8ef4-1ebdb3d8f9ed	CHECKIN	{"source": "system", "status": "success"}	2026-07-03 19:25:52.472587
+25	c6b9d9ad-04fe-43ff-b46c-48223ef36f3d	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-05-30 19:25:52.472587
+26	94b5f729-2367-4ab1-b5c9-e1b532262dc0	CHECKIN	{"source": "system", "status": "success"}	2026-06-22 19:25:52.472587
+27	61b33059-96cc-416e-b481-e9532d6b88ae	CHECKOUT	{"source": "system", "status": "success"}	2026-07-04 19:25:52.472587
+28	723fb209-0e2b-49e6-bf5f-ac12ff8496a3	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-05-29 19:25:52.472587
+29	0f1874ed-94ca-4d4c-a1c4-95265e170e52	CHECKIN	{"source": "system", "status": "success"}	2026-05-31 19:25:52.472587
+30	253f8d04-3bf9-435d-9122-5cd1bfca81eb	CHECKOUT	{"source": "system", "status": "success"}	2026-06-13 19:25:52.472587
+31	92dfe12e-1660-4d85-87b2-1088d0cbf327	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-19 19:25:52.472587
+32	b98ac9f4-4761-4269-a534-0d373154d537	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-09 19:25:52.472587
+33	31c8c629-545b-40ba-b94d-47329c7f6b6e	CHECKOUT	{"source": "system", "status": "success"}	2026-06-04 19:25:52.472587
+34	3d6dd803-ae7d-478d-8932-3fcfe960a691	CHECKOUT	{"source": "system", "status": "success"}	2026-07-04 19:25:52.472587
+35	9b9368f9-d031-4730-b515-88db9acf4f0c	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-05 19:25:52.472587
+36	5399b43a-0a26-4056-b6d9-b90babc4dd5b	CHECKOUT	{"source": "system", "status": "success"}	2026-06-10 19:25:52.472587
+37	d00402de-cb66-4934-b5a2-9bd2e5dfba0e	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-23 19:25:52.472587
+38	16065291-b18a-4d34-8f29-bb6967ee025f	CHECKOUT	{"source": "system", "status": "success"}	2026-06-30 19:25:52.472587
+39	dfeb3281-d869-41ff-be25-8c6dabb534a7	CHECKOUT	{"source": "system", "status": "success"}	2026-06-17 19:25:52.472587
+40	53fe2eb1-b5bd-4437-8a1b-986c2df221cf	CHECKOUT	{"source": "system", "status": "success"}	2026-06-29 19:25:52.472587
+41	1aa7571c-af16-48cb-92f0-5595c3e6f7cb	CHECKOUT	{"source": "system", "status": "success"}	2026-06-29 19:25:52.472587
+42	096029bc-07a5-4a39-bdf2-30565dc92d3d	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-04 19:25:52.472587
+43	3d7e1e00-173a-4a1e-8da0-7205c9bb8189	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-28 19:25:52.472587
+44	4f4e53a9-f6f2-495f-8405-e67a427f23c2	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-30 19:25:52.472587
+45	2c4cc4e3-e002-4999-9670-0cd08e30d5cd	CHECKIN	{"source": "system", "status": "success"}	2026-06-28 19:25:52.472587
+46	c1a1e8b4-ed18-4aac-82cb-350509e7ff1b	CHECKIN	{"source": "system", "status": "success"}	2026-07-02 19:25:52.472587
+47	e8d80505-79ec-4638-8018-331f646989ac	CHECKIN	{"source": "system", "status": "success"}	2026-06-05 19:25:52.472587
+48	d123b5bb-f02d-4609-96fd-72cc3cd55ad1	CHECKIN	{"source": "system", "status": "success"}	2026-06-08 19:25:52.472587
+49	4ab56637-e4ef-4f61-9688-647b5cfc1a85	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-25 19:25:52.472587
+50	825610e1-77e5-4e7e-8cf1-4ddd07fdb7b4	CHECKOUT	{"source": "system", "status": "success"}	2026-06-20 19:25:52.472587
+51	829a8812-af19-4980-ac47-542cab4913a7	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-05-28 19:25:52.472587
+52	5a71a3f4-f4e0-4fc8-b9ff-041ace695272	CHECKIN	{"source": "system", "status": "success"}	2026-06-27 19:25:52.472587
+53	3fc72833-86fc-4abf-991d-b39b7ef6cab8	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-25 19:25:52.472587
+54	96282fdf-e87d-4d08-a554-71f4e139e817	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-28 19:25:52.472587
+55	9ad10849-7c45-44cd-b34b-8868be333f84	CHECKOUT	{"source": "system", "status": "success"}	2026-05-29 19:25:52.472587
+56	0e5059d9-cb1c-4ca4-a105-24e645a97b95	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-19 19:25:52.472587
+57	33e65386-16f3-4dbb-a44a-899fba7de416	CHECKIN	{"source": "system", "status": "success"}	2026-06-25 19:25:52.472587
+58	27f415e7-b62d-4687-a8c1-421009ac75f0	CHECKOUT	{"source": "system", "status": "success"}	2026-06-17 19:25:52.472587
+59	a43fa6ab-a14c-4f09-a24d-bb5bf9584617	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-01 19:25:52.472587
+60	2642a52f-c2d6-4cab-bf50-5293e8d84150	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-13 19:25:52.472587
+61	beef133c-5587-44f4-a99e-c12c575012ff	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-19 19:25:52.472587
+62	59de2948-3b20-47de-80ce-296f1ea04375	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-03 19:25:52.472587
+63	dae27507-49c4-4418-b72f-df80cf4da29a	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-05-26 19:25:52.472587
+64	6784218a-0743-4da3-9b8a-9badef2cf6d7	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-10 19:25:52.472587
+65	d235a7c4-2647-4247-83d5-53b02b3f7785	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-25 19:25:52.472587
+66	69bbfd54-1252-402a-a216-611db7774084	CHECKOUT	{"source": "system", "status": "success"}	2026-06-19 19:25:52.472587
+67	fb20d66d-34a5-465b-bc00-8a32f27cc59c	CHECKIN	{"source": "system", "status": "success"}	2026-06-24 19:25:52.472587
+68	842239f8-de10-46d8-82cb-ceb604e7396b	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-18 19:25:52.472587
+69	e75ba030-4471-40aa-b56f-eff67850d938	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-06-23 19:25:52.472587
+70	2cb79f06-589d-46b1-97a8-a041dcb5cdcc	CHECKOUT	{"source": "system", "status": "success"}	2026-07-01 19:25:52.472587
+71	1d7ba24f-6426-43af-bf08-229d7332dbf8	BOOKING_CREATED	{"source": "system", "status": "success"}	2026-06-25 19:25:52.472587
+72	33c691f2-bdc5-4586-acb7-c50cd7b5655b	CHECKIN	{"source": "system", "status": "success"}	2026-05-29 19:25:52.472587
+73	23943c6b-8ddb-430b-893e-ffe5a7c28f02	CHECKIN	{"source": "system", "status": "success"}	2026-06-07 19:25:52.472587
+74	3beaae2a-bfd7-4266-8fc7-b15c92772e1d	CHECKIN	{"source": "system", "status": "success"}	2026-05-27 19:25:52.472587
+75	29f2cfa4-0952-4b8f-979e-641fc3cecb0f	PAYMENT_SUCCESS	{"source": "system", "status": "success"}	2026-07-02 19:25:52.472587
+\.
+
+
+--
+-- Data for Name: hotel_bookings; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.hotel_bookings (id, org_id, hotel_id, city, checkin_date, checkout_date, amount, status, created_at) FROM stdin;
+a1553007-7506-46a7-bc60-c3beba000916	601dca50-d8a7-41f0-b293-2f38d65e9d97	HTL-1	mumbai	2026-07-13	2026-07-24	2678.44	CONFIRMED	2026-06-13 18:25:52.472587
+3763654b-17e5-4e9d-9cf6-d2a4ca91e252	816aa535-d0fc-4add-a3a6-90d0293cbe0d	HTL-2	hyderabad	2026-07-06	2026-07-12	8870.49	COMPLETED	2026-06-20 18:25:52.472587
+d6c63550-1a5d-4180-b4e9-99569926aaab	a000790a-791c-4e77-b3c7-7954ae092adf	HTL-3	mumbai	2026-07-09	2026-07-11	9739.67	CONFIRMED	2026-07-05 18:25:52.472587
+9481c9ca-7e76-4006-8a88-139244c84a74	e3cd9264-713e-4221-af1a-5db10ca68dd8	HTL-4	bangalore	2026-07-15	2026-07-22	7464.33	PENDING	2026-06-15 18:25:52.472587
+94a0773f-af73-4701-b6c2-1d123894d13c	c8d2a381-679f-47d4-aaba-b91193f17b1d	HTL-5	pune	2026-07-12	2026-07-12	9148.15	CONFIRMED	2026-06-17 18:25:52.472587
+5c587e50-e8a7-4bc2-989b-033da6469eaa	9b26d835-e709-4447-9d5b-0ee7dd94f650	HTL-6	pune	2026-07-08	2026-07-19	6964.90	PENDING	2026-06-21 18:25:52.472587
+21c0191d-d9c1-4078-a78d-59fd136e397f	2fcec9d7-77c0-47bc-9744-ba975c39ba3c	HTL-7	pune	2026-07-12	2026-07-13	7471.14	CONFIRMED	2026-05-28 18:25:52.472587
+091f6d41-249a-4f44-9e12-010e3f261eed	797a60dc-5929-470f-a3a2-3896fd9ebb42	HTL-8	hyderabad	2026-07-06	2026-07-22	2324.90	COMPLETED	2026-06-06 18:25:52.472587
+f38e261c-d681-44bd-972c-0ca2117999c9	47d829c5-9e00-4f30-8c3f-a6334595b3cc	HTL-9	mumbai	2026-07-14	2026-07-14	2403.43	PENDING	2026-07-04 18:25:52.472587
+25eed4cb-b0cf-4108-b5f7-07a44cd1890f	f0ecd63c-0d44-47fe-9869-ba4550c4cd4b	HTL-10	mumbai	2026-07-08	2026-07-13	9006.02	CONFIRMED	2026-06-08 18:25:52.472587
+88562817-1c1f-48f6-b1d6-f67a52b7025e	d0488652-1de1-454b-ae00-71c262d821b1	HTL-11	delhi	2026-07-07	2026-07-14	8470.62	CONFIRMED	2026-07-01 18:25:52.472587
+766de7f9-51dd-478d-a92a-05cdfdda7fb4	d9a97821-0e0d-44be-97a7-48dbc343bdc2	HTL-12	hyderabad	2026-07-10	2026-07-24	5889.76	PENDING	2026-06-09 18:25:52.472587
+5e122a45-2621-4ecc-b3b3-55a0831ff80d	4f1abf44-f07f-4f32-9580-c1946225032a	HTL-13	mumbai	2026-07-12	2026-07-25	3691.72	CONFIRMED	2026-06-23 18:25:52.472587
+6dd2cc39-c412-43bf-a2cd-7324a30e47ab	ba07f9c5-9d41-424f-909c-3531060044fe	HTL-14	bangalore	2026-07-07	2026-07-22	6788.77	CANCELLED	2026-06-06 18:25:52.472587
+9102d4aa-8d4a-4134-90bb-5a3d9d00d396	3da99386-796c-4d4f-b3e8-3b64a8313073	HTL-15	mumbai	2026-07-11	2026-07-16	9083.49	CONFIRMED	2026-07-05 18:25:52.472587
+c88452c7-0bae-4796-9acd-048353819d74	310fb112-714f-4a97-92f3-ba206f3dac27	HTL-16	delhi	2026-07-12	2026-07-25	6811.47	PENDING	2026-06-12 18:25:52.472587
+640b129b-8e08-4da0-95cd-41d32c34876b	8444fcd3-1a63-4cf2-8825-aaa13be02ce7	HTL-17	hyderabad	2026-07-07	2026-07-16	7277.54	CANCELLED	2026-05-28 18:25:52.472587
+6999307a-0939-4ef0-a666-2affb31a2ea7	f96c99c8-2d73-4643-9849-2813e66eecf2	HTL-18	hyderabad	2026-07-13	2026-07-23	4961.57	PENDING	2026-05-31 18:25:52.472587
+845b84a2-3699-43b1-b904-c4c7a56180b3	290600e3-8731-4e81-9c04-b0bd638ee990	HTL-19	hyderabad	2026-07-08	2026-07-24	9501.83	PENDING	2026-06-23 18:25:52.472587
+e76b93d0-d3c4-404f-878a-a75fb5b53bac	fc0056f9-5fb0-4ab1-a238-e0317fc7307e	HTL-20	delhi	2026-07-09	2026-07-16	7561.52	CONFIRMED	2026-06-28 18:25:52.472587
+a9d4d9a3-b467-423d-8b8d-fd1948dbcad1	66f17a98-ecde-4055-8c3f-b41605c7e724	HTL-21	bangalore	2026-07-07	2026-07-18	4722.66	CONFIRMED	2026-06-18 18:25:52.472587
+8ccc51e9-9d12-4d48-b34d-befb2c140742	b6725f75-e7a9-4400-9f0c-8f8f9d4460c5	HTL-22	mumbai	2026-07-12	2026-07-23	8940.79	CANCELLED	2026-06-13 18:25:52.472587
+686c2912-0e83-42c8-8be2-8ec871aeccaa	e1027e4d-28ee-4260-b6a8-98b3ffb3ecb1	HTL-23	hyderabad	2026-07-12	2026-07-21	7970.41	CANCELLED	2026-06-12 18:25:52.472587
+b478010b-2471-4965-8ef4-1ebdb3d8f9ed	2ecc1804-29d2-4f4d-be8b-fe13ab580e2e	HTL-24	delhi	2026-07-07	2026-07-18	6274.35	PENDING	2026-07-03 18:25:52.472587
+c6b9d9ad-04fe-43ff-b46c-48223ef36f3d	c267003f-5ab7-4ac9-a1a9-213f2c399964	HTL-25	hyderabad	2026-07-06	2026-07-20	9638.59	PENDING	2026-05-30 18:25:52.472587
+94b5f729-2367-4ab1-b5c9-e1b532262dc0	192239a5-1517-4a28-bbeb-5977b99455a4	HTL-26	pune	2026-07-07	2026-07-19	3872.60	CONFIRMED	2026-06-22 18:25:52.472587
+61b33059-96cc-416e-b481-e9532d6b88ae	0aed7e5e-1665-45f0-a08e-4bda7001c1ac	HTL-27	pune	2026-07-07	2026-07-12	2901.06	COMPLETED	2026-07-04 18:25:52.472587
+723fb209-0e2b-49e6-bf5f-ac12ff8496a3	18eb578e-5af5-4f49-a780-aea1d4fbce97	HTL-28	hyderabad	2026-07-14	2026-07-21	9108.99	CANCELLED	2026-05-29 18:25:52.472587
+0f1874ed-94ca-4d4c-a1c4-95265e170e52	7d5265fa-c231-4f79-9947-9223acfdf447	HTL-29	hyderabad	2026-07-12	2026-07-12	2807.55	PENDING	2026-05-31 18:25:52.472587
+253f8d04-3bf9-435d-9122-5cd1bfca81eb	999e092a-c5b8-418d-8edc-f66b37ca831b	HTL-30	mumbai	2026-07-07	2026-07-21	6059.59	CONFIRMED	2026-06-13 18:25:52.472587
+92dfe12e-1660-4d85-87b2-1088d0cbf327	68057fad-330b-4afd-a97c-73b948403d3c	HTL-31	bangalore	2026-07-10	2026-07-13	8154.92	CANCELLED	2026-06-19 18:25:52.472587
+b98ac9f4-4761-4269-a534-0d373154d537	39659a2a-d8fa-4356-ac9e-5af9d9ffd26c	HTL-32	hyderabad	2026-07-12	2026-07-17	6409.26	COMPLETED	2026-06-09 18:25:52.472587
+31c8c629-545b-40ba-b94d-47329c7f6b6e	07834a50-07bc-4db7-9d00-e96668d3f726	HTL-33	mumbai	2026-07-12	2026-07-12	6477.38	CONFIRMED	2026-06-04 18:25:52.472587
+3d6dd803-ae7d-478d-8932-3fcfe960a691	f18a978f-0809-4106-aac9-f2699ba24833	HTL-34	pune	2026-07-10	2026-07-17	9782.04	CANCELLED	2026-07-04 18:25:52.472587
+9b9368f9-d031-4730-b515-88db9acf4f0c	ceb63b11-f132-4c21-8653-862f73d56024	HTL-35	bangalore	2026-07-12	2026-07-11	6963.23	CONFIRMED	2026-06-05 18:25:52.472587
+5399b43a-0a26-4056-b6d9-b90babc4dd5b	55e14c4e-7df0-4b55-879f-c6bd9315bf67	HTL-36	mumbai	2026-07-13	2026-07-21	2940.72	PENDING	2026-06-10 18:25:52.472587
+d00402de-cb66-4934-b5a2-9bd2e5dfba0e	547fd245-677c-4620-9d16-f12d037a0e92	HTL-37	delhi	2026-07-12	2026-07-22	8032.13	CANCELLED	2026-06-23 18:25:52.472587
+16065291-b18a-4d34-8f29-bb6967ee025f	f315d585-2b70-4084-8194-607400dc7715	HTL-38	mumbai	2026-07-15	2026-07-20	7276.37	COMPLETED	2026-06-30 18:25:52.472587
+dfeb3281-d869-41ff-be25-8c6dabb534a7	9dbcccc5-7dc8-4430-818a-8bac0d1badf1	HTL-39	hyderabad	2026-07-08	2026-07-14	8050.85	COMPLETED	2026-06-17 18:25:52.472587
+53fe2eb1-b5bd-4437-8a1b-986c2df221cf	6264c227-c4bc-4234-831c-a09cc4dbb732	HTL-40	mumbai	2026-07-06	2026-07-15	2238.10	PENDING	2026-06-29 18:25:52.472587
+1aa7571c-af16-48cb-92f0-5595c3e6f7cb	4be58e9b-b68a-4fac-b589-249c1ea5fdb8	HTL-41	delhi	2026-07-09	2026-07-18	3113.54	COMPLETED	2026-06-29 18:25:52.472587
+096029bc-07a5-4a39-bdf2-30565dc92d3d	2aa32354-620a-4c79-8022-773223015b2a	HTL-42	pune	2026-07-11	2026-07-25	8593.38	COMPLETED	2026-06-04 18:25:52.472587
+3d7e1e00-173a-4a1e-8da0-7205c9bb8189	686cb427-236c-4d7e-8c3c-4a037eab0055	HTL-43	pune	2026-07-14	2026-07-17	2566.30	PENDING	2026-06-28 18:25:52.472587
+4f4e53a9-f6f2-495f-8405-e67a427f23c2	bd72b85e-dad7-4f70-813a-d903229abcc1	HTL-44	bangalore	2026-07-08	2026-07-15	9538.45	CANCELLED	2026-06-30 18:25:52.472587
+2c4cc4e3-e002-4999-9670-0cd08e30d5cd	71f9ef9a-3f7b-4abf-bc9d-0592929bd8e4	HTL-45	bangalore	2026-07-07	2026-07-11	4838.97	PENDING	2026-06-28 18:25:52.472587
+c1a1e8b4-ed18-4aac-82cb-350509e7ff1b	1f198af5-f1af-4a06-874b-6dde274045e0	HTL-46	delhi	2026-07-09	2026-07-24	5496.57	PENDING	2026-07-02 18:25:52.472587
+e8d80505-79ec-4638-8018-331f646989ac	ea6f6878-1005-446d-8205-9c6aaedff4bf	HTL-47	delhi	2026-07-13	2026-07-15	4715.27	CONFIRMED	2026-06-05 18:25:52.472587
+d123b5bb-f02d-4609-96fd-72cc3cd55ad1	f7d01cc0-2446-4f5e-8fef-8aae052cb3a8	HTL-48	mumbai	2026-07-13	2026-07-15	4154.69	PENDING	2026-06-08 18:25:52.472587
+4ab56637-e4ef-4f61-9688-647b5cfc1a85	42bc17bc-e705-449d-b47a-7e3ef3a78f18	HTL-49	bangalore	2026-07-11	2026-07-18	6613.93	COMPLETED	2026-06-25 18:25:52.472587
+825610e1-77e5-4e7e-8cf1-4ddd07fdb7b4	f385ae40-ab83-40de-872c-7f66f344e5ad	HTL-50	hyderabad	2026-07-13	2026-07-21	3454.75	CONFIRMED	2026-06-20 18:25:52.472587
+829a8812-af19-4980-ac47-542cab4913a7	75418cbb-a3de-40c2-8bda-230169607e65	HTL-51	mumbai	2026-07-15	2026-07-12	8588.23	CANCELLED	2026-05-28 18:25:52.472587
+5a71a3f4-f4e0-4fc8-b9ff-041ace695272	f7a44f95-4092-4db9-86ad-c2cc1dadd983	HTL-52	mumbai	2026-07-11	2026-07-19	3663.78	COMPLETED	2026-06-27 18:25:52.472587
+3fc72833-86fc-4abf-991d-b39b7ef6cab8	39647e63-d81d-490c-89d0-8b9af22b88d9	HTL-53	delhi	2026-07-12	2026-07-11	6942.56	PENDING	2026-06-25 18:25:52.472587
+96282fdf-e87d-4d08-a554-71f4e139e817	cfc5e24a-a256-44a7-950c-ef8187e1870c	HTL-54	mumbai	2026-07-05	2026-07-15	2137.73	CONFIRMED	2026-06-28 18:25:52.472587
+9ad10849-7c45-44cd-b34b-8868be333f84	72a3a008-3ae9-46b3-8509-ceb7beb43f40	HTL-55	bangalore	2026-07-08	2026-07-17	5623.37	COMPLETED	2026-05-29 18:25:52.472587
+0e5059d9-cb1c-4ca4-a105-24e645a97b95	be238e7e-2036-4e7f-a90b-58c2d667bf31	HTL-56	hyderabad	2026-07-05	2026-07-19	7969.73	CANCELLED	2026-06-19 18:25:52.472587
+33e65386-16f3-4dbb-a44a-899fba7de416	a144542d-cc27-4ec8-a5f4-184895a0a9e9	HTL-57	delhi	2026-07-13	2026-07-18	7911.12	CANCELLED	2026-06-25 18:25:52.472587
+27f415e7-b62d-4687-a8c1-421009ac75f0	6ee4163e-b667-4e04-bdaa-522fee27ff03	HTL-58	hyderabad	2026-07-11	2026-07-24	5169.80	CONFIRMED	2026-06-17 18:25:52.472587
+a43fa6ab-a14c-4f09-a24d-bb5bf9584617	7703e257-f192-4b35-a5ac-f24ca7a2823f	HTL-59	delhi	2026-07-14	2026-07-11	9729.45	COMPLETED	2026-06-01 18:25:52.472587
+2642a52f-c2d6-4cab-bf50-5293e8d84150	ca5697ee-2a51-4811-97b9-6ff803358f01	HTL-60	delhi	2026-07-08	2026-07-22	6840.55	COMPLETED	2026-06-13 18:25:52.472587
+beef133c-5587-44f4-a99e-c12c575012ff	82ae1611-50ff-464c-8c02-eb6979ea8cd2	HTL-61	mumbai	2026-07-14	2026-07-23	5806.32	PENDING	2026-06-19 18:25:52.472587
+59de2948-3b20-47de-80ce-296f1ea04375	b25b43ba-0eb9-4aea-b0e5-c4d1ba76d4c7	HTL-62	bangalore	2026-07-09	2026-07-12	2889.89	PENDING	2026-06-03 18:25:52.472587
+dae27507-49c4-4418-b72f-df80cf4da29a	ec2afa71-90bc-4a3c-ab38-b16af6673908	HTL-63	bangalore	2026-07-10	2026-07-12	7714.27	COMPLETED	2026-05-26 18:25:52.472587
+6784218a-0743-4da3-9b8a-9badef2cf6d7	bcbb276a-af81-4dc7-a16f-bce067d07bab	HTL-64	bangalore	2026-07-09	2026-07-11	7009.38	COMPLETED	2026-06-10 18:25:52.472587
+d235a7c4-2647-4247-83d5-53b02b3f7785	92a09dce-088b-4df5-9af5-8ce89b82b9f2	HTL-65	delhi	2026-07-12	2026-07-15	6350.15	CANCELLED	2026-06-25 18:25:52.472587
+69bbfd54-1252-402a-a216-611db7774084	fb2fbaa6-cbe6-401a-803d-63eb06f88bf3	HTL-66	pune	2026-07-06	2026-07-21	3538.81	COMPLETED	2026-06-19 18:25:52.472587
+fb20d66d-34a5-465b-bc00-8a32f27cc59c	3577bf38-29b6-45cd-9ac8-cc847ed15391	HTL-67	mumbai	2026-07-06	2026-07-25	4935.66	CANCELLED	2026-06-24 18:25:52.472587
+842239f8-de10-46d8-82cb-ceb604e7396b	66b42965-29ff-4062-bc7f-65a451978630	HTL-68	pune	2026-07-12	2026-07-21	8346.55	COMPLETED	2026-06-18 18:25:52.472587
+e75ba030-4471-40aa-b56f-eff67850d938	81eb78e4-b6dc-4451-89b7-9a10683d82e1	HTL-69	bangalore	2026-07-13	2026-07-20	5386.18	COMPLETED	2026-06-23 18:25:52.472587
+2cb79f06-589d-46b1-97a8-a041dcb5cdcc	c4858668-2271-42c8-878c-b7d9e0031a67	HTL-70	bangalore	2026-07-08	2026-07-14	4745.37	CANCELLED	2026-07-01 18:25:52.472587
+1d7ba24f-6426-43af-bf08-229d7332dbf8	970c6569-de42-4659-9f92-f7a753793e2a	HTL-71	mumbai	2026-07-13	2026-07-19	6618.52	COMPLETED	2026-06-25 18:25:52.472587
+33c691f2-bdc5-4586-acb7-c50cd7b5655b	2101be18-0233-4b96-b961-c30ac19f07a2	HTL-72	pune	2026-07-07	2026-07-23	2170.28	PENDING	2026-05-29 18:25:52.472587
+23943c6b-8ddb-430b-893e-ffe5a7c28f02	fa449930-ec0d-4f6f-9d3a-f8f265a9b1a9	HTL-73	bangalore	2026-07-07	2026-07-18	7276.11	PENDING	2026-06-07 18:25:52.472587
+3beaae2a-bfd7-4266-8fc7-b15c92772e1d	0f4da386-b297-4c77-a6b4-6921cce97368	HTL-74	delhi	2026-07-06	2026-07-18	7498.06	CONFIRMED	2026-05-27 18:25:52.472587
+29f2cfa4-0952-4b8f-979e-641fc3cecb0f	ca00c92f-96ba-497d-b923-a55543ded0f9	HTL-75	delhi	2026-07-06	2026-07-16	4939.26	COMPLETED	2026-07-02 18:25:52.472587
+de85ba1f-9beb-4608-9f14-b0c2dc685a39	0c65ad33-a8d5-4ba4-8f3d-7037d7496698	HTL-76	mumbai	2026-07-09	2026-07-20	5404.36	PENDING	2026-06-07 18:25:52.472587
+00b1a272-5ab9-4893-9eb6-4cc42854a7cd	afc6f5de-df94-4e04-8c18-c4137eecbc51	HTL-77	hyderabad	2026-07-12	2026-07-19	4134.90	COMPLETED	2026-06-03 18:25:52.472587
+2cf62018-51e5-45a3-b906-614f33dc7114	b8f489df-e6d6-4d4c-be86-3cb58e31ad12	HTL-78	bangalore	2026-07-06	2026-07-10	7996.61	COMPLETED	2026-06-10 18:25:52.472587
+c7af37ac-269d-43b5-a1c4-dd7c7702d079	bfe7be0e-554f-4a3d-b1a9-ab849682ae1e	HTL-79	pune	2026-07-11	2026-07-16	9971.42	COMPLETED	2026-06-11 18:25:52.472587
+a18f1757-3359-43a8-bacf-50ddf46e22a8	62ccf646-cfb6-463b-82f9-da544541108a	HTL-80	bangalore	2026-07-10	2026-07-21	4171.79	PENDING	2026-07-02 18:25:52.472587
+a5b23815-aaf1-40de-b87b-549c327fadfe	57f7a863-6bac-45e5-beae-a357c06af062	HTL-81	mumbai	2026-07-12	2026-07-19	7224.55	CANCELLED	2026-06-28 18:25:52.472587
+100a9c09-8727-4417-9e60-98afd60f9290	cc4f2f37-30c3-497c-bcbf-dcb17ca81f7a	HTL-82	bangalore	2026-07-08	2026-07-19	6036.68	COMPLETED	2026-06-01 18:25:52.472587
+a3e0f7f2-4dfb-44af-8cd1-006e72ee8995	049b712b-87f2-4925-82b3-a8e1d66b373e	HTL-83	pune	2026-07-11	2026-07-11	2920.49	CANCELLED	2026-06-07 18:25:52.472587
+dc962a92-3730-4860-b6dc-44af5f7934ff	c7d0afac-4807-4eea-b0ea-c8422dec834d	HTL-84	mumbai	2026-07-06	2026-07-10	2274.07	CONFIRMED	2026-06-07 18:25:52.472587
+d2a39d75-aaa8-42c4-b246-85190d9efafc	5b715913-3de1-44f2-8e87-76d90ca45928	HTL-85	hyderabad	2026-07-06	2026-07-11	5287.82	COMPLETED	2026-06-23 18:25:52.472587
+d68b379e-b962-4236-86cb-40fe8ebe9cf3	02386951-04b2-43e7-be56-c7952f3f15ea	HTL-86	hyderabad	2026-07-15	2026-07-19	3793.51	PENDING	2026-06-14 18:25:52.472587
+8e461966-9720-404f-8170-8e342d6c727d	af7f6558-46e8-4549-99df-c1cd7498490c	HTL-87	delhi	2026-07-08	2026-07-15	3939.16	PENDING	2026-06-02 18:25:52.472587
+f1cc419b-13a9-43d8-83d5-e54eb0d9e5fa	ce96d974-491e-4765-ae79-c20213e4bc92	HTL-88	bangalore	2026-07-08	2026-07-18	4237.79	CONFIRMED	2026-06-11 18:25:52.472587
+c3f58886-17a0-4c9b-817b-8460efbc6800	8a7ea10f-1ff2-487d-ad21-349b3a583f9b	HTL-89	mumbai	2026-07-10	2026-07-25	7120.49	COMPLETED	2026-06-30 18:25:52.472587
+30b4573d-88a8-4ecc-ba66-047427198279	b4057d2d-9a09-43b6-a501-13d4e2c1b615	HTL-90	delhi	2026-07-09	2026-07-18	8374.55	CONFIRMED	2026-05-31 18:25:52.472587
+d8b8d04d-253d-40a6-889d-0ecffef98ddb	642befe9-65e0-496d-87f2-c68bc877832b	HTL-91	hyderabad	2026-07-09	2026-07-17	6265.27	COMPLETED	2026-06-30 18:25:52.472587
+5d30d3c8-fbba-4903-aab1-0e4d9f08b7a0	6f5aa892-ae86-485a-9747-7077aefb0c7b	HTL-92	pune	2026-07-11	2026-07-23	4341.01	CONFIRMED	2026-06-30 18:25:52.472587
+a40c26ad-8d05-46db-b433-68e0cd2ab172	f13b87c7-17ad-4174-948c-f80e19bdcd46	HTL-93	delhi	2026-07-09	2026-07-16	8286.57	PENDING	2026-06-17 18:25:52.472587
+da108929-167e-475a-b3a1-2dbc6cc437a2	b8bdecf7-6682-43c1-b0ad-2b268006c435	HTL-94	pune	2026-07-14	2026-07-18	7003.58	COMPLETED	2026-07-02 18:25:52.472587
+2db73120-1f37-45ee-bdf7-e599e183d8d6	c7330f1f-1f2f-4720-a673-970e3d5dd8ff	HTL-95	mumbai	2026-07-07	2026-07-11	5764.04	CANCELLED	2026-06-11 18:25:52.472587
+a3e9d2c4-65c9-4310-826e-8aa1a3c22c8e	72427e04-8d37-4b82-b4ba-99fab6a5f6f8	HTL-96	delhi	2026-07-11	2026-07-16	2745.49	CONFIRMED	2026-05-31 18:25:52.472587
+1aedaa4f-456b-45aa-98d1-a49080075351	727c43a1-202c-4d8a-9695-eab828082370	HTL-97	bangalore	2026-07-12	2026-07-20	4981.18	CANCELLED	2026-06-09 18:25:52.472587
+fdccff4c-e183-4d33-80aa-74b3fad29fca	b8aad67e-bc27-49c2-ac01-5529bf6f1a3a	HTL-98	pune	2026-07-12	2026-07-15	3734.63	CONFIRMED	2026-06-07 18:25:52.472587
+4a9b1116-82a6-4098-a349-8e39ed788af3	75ac4419-26de-4ba9-81ac-71c2ae0deed9	HTL-99	pune	2026-07-14	2026-07-15	7530.55	CANCELLED	2026-06-23 18:25:52.472587
+ceda3fc8-f311-4cc8-8852-611ce6d8c2d7	8d564c3a-0dc1-4bca-bb9a-73dd24e687b2	HTL-100	delhi	2026-07-05	2026-07-19	4323.24	PENDING	2026-06-02 18:25:52.472587
+\.
+
+
+--
+-- Name: booking_events_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.booking_events_id_seq', 75, true);
+
+
+--
+-- Name: booking_events booking_events_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.booking_events
+    ADD CONSTRAINT booking_events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hotel_bookings hotel_bookings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.hotel_bookings
+    ADD CONSTRAINT hotel_bookings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_city_created_org_status; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_city_created_org_status ON public.hotel_bookings USING btree (city, created_at, org_id, status);
+
+
+--
+-- Name: booking_events booking_events_booking_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.booking_events
+    ADD CONSTRAINT booking_events_booking_id_fkey FOREIGN KEY (booking_id) REFERENCES public.hotel_bookings(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict 81xmLwG6ul8MGJ70tfgM88Nh5HsmZPVX7lhFEiov112jClTN2LrZiKcIU1iBsh2
+
