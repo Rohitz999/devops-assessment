@@ -55,7 +55,7 @@ resource "aws_iam_role" "ecs_execution_role" {
 
 resource "aws_iam_role_policy_attachment" "ecs_execution_role" {
 
-  role       = aws_iam_role.ecs_execution_role.name
+  role = aws_iam_role.ecs_execution_role.name
 
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 
@@ -67,7 +67,7 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_role" {
 
 resource "aws_security_group" "ecs" {
 
-  name   = "${var.project_name}-${var.environment}-ecs-sg"
+  name = "${var.project_name}-${var.environment}-ecs-sg"
 
   vpc_id = var.vpc_id
 

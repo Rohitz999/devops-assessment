@@ -60,7 +60,7 @@ resource "aws_db_instance" "postgres" {
   instance_class = var.db_instance_class
 
   allocated_storage = 20
-  storage_type       = "gp3"
+  storage_type      = "gp3"
 
   db_name  = var.db_name
   username = var.db_username
