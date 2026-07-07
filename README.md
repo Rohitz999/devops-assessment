@@ -290,28 +290,106 @@ backups/hoteldb_YYYYMMDD_HHMMSS.sql
 
 ---
 
-# Database Restore
+## Database Restore
 
-Create a new database.
+### 1. Connect to PostgreSQL
+
+```bash
+docker exec -it hotel-postgres psql -U postgres
+```
+
+### 2. Create a New Database
 
 ```sql
 CREATE DATABASE hoteldb_restore;
 ```
 
-Restore the backup.
+### 3. Exit PostgreSQL
+
+```sql
+\q
+```
+
+### 4. Restore the Backup
 
 ```bash
+cd scripts
+
 ./restore.sh backups/hoteldb_YYYYMMDD_HHMMSS.sql hoteldb_restore
 ```
 
-Verify the restored database.
+Expected output:
+
+```
+Database restored successfully.
+```
+
+### 5. Connect to the Restored Database
+
+```bash
+docker exec -it hotel-postgres psql -U postgres -d hoteldb_restore
+```
+
+### 6. Verify the Restore
+
+Check the tables:
 
 ```sql
-\c hoteldb_restore
+\dt
+```
 
+Verify the number of booking records:
+
+```sql
 SELECT COUNT(*) FROM hotel_bookings;
+```
 
+Expected:
+
+```
+100
+```
+
+Verify the number of booking events:
+
+```sql
 SELECT COUNT(*) FROM booking_events;
+```
+
+Expected:
+
+```
+75
+```
+
+Verify the index:
+
+```sql
+SELECT indexname
+FROM pg_indexes
+WHERE tablename = 'hotel_bookings';
+```
+
+Expected:
+
+```
+hotel_bookings_pkey
+idx_city_created_org_status
+```
+
+Run a sample query:
+
+```sql
+SELECT
+    org_id,
+    status,
+    COUNT(*) AS total_bookings,
+    SUM(amount) AS total_amount
+FROM hotel_bookings
+WHERE city = 'delhi'
+  AND created_at >= NOW() - INTERVAL '30 days'
+GROUP BY org_id, status
+ORDER BY total_bookings DESC;
 ```
 
 ---
