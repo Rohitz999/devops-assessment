@@ -6,10 +6,14 @@ This repository contains the infrastructure and database automation for a Hotel 
 
 ---
 
-## Project Structure
+# Project Structure
 
-```
+```text
 devops-assessment/
+├── .github/
+│   └── workflows/
+│       └── terraform.yml
+│
 ├── database/
 │   ├── docker-compose.yml
 │   └── init/
@@ -21,7 +25,22 @@ devops-assessment/
 ├── infra/
 │   ├── envs/
 │   │   ├── dev/
+│   │   │   ├── backend.tf
+│   │   │   ├── provider.tf
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   ├── outputs.tf
+│   │   │   ├── random.tf
+│   │   │   └── terraform.tfvars
+│   │   │
 │   │   └── prod/
+│   │       ├── backend.tf
+│   │       ├── provider.tf
+│   │       ├── main.tf
+│   │       ├── variables.tf
+│   │       ├── outputs.tf
+│   │       ├── random.tf
+│   │       └── terraform.tfvars
 │   │
 │   └── modules/
 │       ├── network/
@@ -43,6 +62,7 @@ devops-assessment/
 
 - Terraform
 - AWS
+- Amazon VPC
 - ECS Fargate
 - Application Load Balancer
 - Amazon RDS PostgreSQL
@@ -50,34 +70,86 @@ devops-assessment/
 - PostgreSQL 16
 - GitHub Actions
 - Bash
+- Linux
 
 ---
 
 # Terraform Infrastructure
 
-The Terraform code is modularized into reusable components.
+The infrastructure is built using reusable Terraform modules.
 
-### Modules
+## Modules
 
 - Network (VPC, Public & Private Subnets)
 - Application Load Balancer
 - ECS Cluster & Service
-- RDS PostgreSQL
+- Amazon RDS PostgreSQL
 
-### Environments
+## Environments
 
 ```
 infra/envs/dev
 infra/envs/prod
 ```
 
-Each environment has its own:
+Each environment contains:
 
-- provider
-- backend
-- variables
-- outputs
+- provider.tf
+- backend.tf
+- main.tf
+- variables.tf
+- outputs.tf
 - terraform.tfvars
+
+---
+
+# Terraform Backend
+
+## Local Development
+
+For local development, the S3 backend in `backend.tf` is commented out.
+
+This allows Terraform to use the default **local backend**, making it possible to test and validate the configuration without creating an S3 bucket or configuring remote state.
+
+Run locally:
+
+```bash
+cd infra/envs/dev
+
+terraform fmt -recursive
+terraform init
+terraform validate
+terraform plan -refresh=false
+```
+
+---
+
+## Remote Backend (AWS)
+
+For production or shared environments, uncomment the S3 backend configuration in:
+
+```
+infra/envs/dev/backend.tf
+infra/envs/prod/backend.tf
+```
+
+Example:
+
+```hcl
+terraform {
+  backend "s3" {
+    bucket = "terraform-state-bucket"
+    key    = "dev/terraform.tfstate"
+    region = "ap-south-1"
+  }
+}
+```
+
+After enabling the backend:
+
+```bash
+terraform init -reconfigure
+```
 
 ---
 
@@ -89,7 +161,7 @@ The PostgreSQL database is initialized automatically using Docker Compose.
 
 ### hotel_bookings
 
-Stores booking information.
+Stores hotel booking information.
 
 ### booking_events
 
@@ -99,36 +171,36 @@ Stores booking lifecycle events.
 
 # Features
 
-- Primary Keys
+- UUID Primary Keys
 - Foreign Keys
-- UUID support
-- JSONB payload
-- Composite indexes
-- Sample seed data
+- JSONB Payload
+- Composite Index
+- Seed Data
+- Booking Event History
 
 ---
 
-# Running Database
+# Running PostgreSQL
 
-Move to database directory
+Move into the database directory.
 
 ```bash
 cd database
 ```
 
-Start PostgreSQL
+Start PostgreSQL.
 
 ```bash
 docker compose up -d
 ```
 
-Verify container
+Verify the container.
 
 ```bash
 docker ps
 ```
 
-Connect to PostgreSQL
+Connect to PostgreSQL.
 
 ```bash
 docker exec -it hotel-postgres psql -U postgres -d hoteldb
@@ -138,13 +210,20 @@ docker exec -it hotel-postgres psql -U postgres -d hoteldb
 
 # Verify Database
 
-List tables
+List tables.
 
 ```sql
 \dt
 ```
 
-Check booking records
+Expected
+
+```
+hotel_bookings
+booking_events
+```
+
+Verify booking records.
 
 ```sql
 SELECT COUNT(*) FROM hotel_bookings;
@@ -156,7 +235,7 @@ Expected
 100
 ```
 
-Check booking events
+Verify booking events.
 
 ```sql
 SELECT COUNT(*) FROM booking_events;
@@ -181,26 +260,27 @@ SELECT
 FROM hotel_bookings
 WHERE city='delhi'
 AND created_at >= NOW() - INTERVAL '30 days'
-GROUP BY org_id,status;
+GROUP BY org_id,status
+ORDER BY total_bookings DESC;
 ```
 
 ---
 
-# Backup
+# Database Backup
 
-Move into scripts directory
+Move into the scripts directory.
 
 ```bash
 cd scripts
 ```
 
-Run
+Run backup.
 
 ```bash
 ./backup.sh
 ```
 
-Example Output
+Example output:
 
 ```
 Backup completed successfully.
@@ -210,21 +290,21 @@ backups/hoteldb_YYYYMMDD_HHMMSS.sql
 
 ---
 
-# Restore
+# Database Restore
 
-Create a new database
+Create a new database.
 
 ```sql
 CREATE DATABASE hoteldb_restore;
 ```
 
-Restore
+Restore the backup.
 
 ```bash
 ./restore.sh backups/hoteldb_YYYYMMDD_HHMMSS.sql hoteldb_restore
 ```
 
-Verify
+Verify the restored database.
 
 ```sql
 \c hoteldb_restore
@@ -236,50 +316,49 @@ SELECT COUNT(*) FROM booking_events;
 
 ---
 
-# Terraform
-
-Go to environment
-
-```bash
-cd infra/envs/dev
-```
-
-Initialize
-
-```bash
-terraform init
-```
-
-Format
-
-```bash
-terraform fmt -recursive
-```
-
-Validate
-
-```bash
-terraform validate
-```
-
-Plan
-
-```bash
-terraform plan -refresh=false
-```
-
----
-
 # GitHub Actions
 
-The repository includes CI validation for Terraform.
+The repository includes a GitHub Actions workflow for Terraform validation.
 
-Pipeline performs:
+Workflow location:
+
+```
+.github/workflows/terraform.yml
+```
+
+The workflow performs:
 
 - Terraform Format Check
 - Terraform Init
 - Terraform Validate
-- Terraform Plan
+
+GitHub Actions initializes Terraform using:
+
+```bash
+terraform init -backend=false
+```
+
+This disables the S3 backend during CI execution, allowing Terraform validation without requiring remote state or an AWS S3 bucket.
+
+> **Note**
+>
+> `terraform plan` is intentionally not executed in GitHub Actions because it requires valid AWS credentials. It should be run locally or in an environment where AWS credentials are configured.
+
+---
+
+# Local Terraform Validation
+
+```bash
+cd infra/envs/dev
+
+terraform fmt -recursive
+
+terraform init
+
+terraform validate
+
+terraform plan -refresh=false
+```
 
 ---
 
@@ -287,28 +366,38 @@ Pipeline performs:
 
 ## Database
 
-- docker compose up
-- Tables created automatically
-- Seed data inserted
-- Index created
-- Backup successful
-- Restore successful
+- ✅ Docker Compose starts PostgreSQL
+- ✅ Tables created automatically
+- ✅ Seed data inserted
+- ✅ Composite index created
+- ✅ Backup script executed successfully
+- ✅ Restore script executed successfully
+- ✅ Restored database verified
 
 ## Terraform
 
-- terraform fmt
-- terraform init
-- terraform validate
-- terraform plan -refresh=false
+### Local
+
+- ✅ terraform fmt
+- ✅ terraform init
+- ✅ terraform validate
+- ✅ terraform plan -refresh=false
+
+### GitHub Actions
+
+- ✅ terraform fmt
+- ✅ terraform init -backend=false
+- ✅ terraform validate
 
 ---
 
 # Assumptions
 
 - Docker Desktop is installed.
-- Terraform 1.6+ is installed.
-- PostgreSQL client utilities (pg_dump and psql) are installed.
-- AWS credentials are configured if provisioning infrastructure.
+- Terraform 1.9+ is installed.
+- PostgreSQL client utilities (`psql` and `pg_dump`) are installed.
+- AWS credentials are configured if running `terraform plan` against AWS resources.
+- The S3 backend is commented out for local development and enabled only when using remote state.
 
 ---
 
@@ -318,7 +407,7 @@ Pipeline performs:
 
 DevOps Engineer
 
-Skills:
+## Skills
 
 - AWS
 - Terraform
@@ -328,3 +417,4 @@ Skills:
 - GitHub Actions
 - Linux
 - PostgreSQL
+- Bash Scripting
